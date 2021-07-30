@@ -24,7 +24,7 @@ public class MenuScreen extends BaseScreen {
     public void render(float delta) {
         super.render(delta);
         batch.begin();
-        batch.draw(img, pos.x, pos.y);
+        batch.draw(img, 0, 0);
         batch.end();
         pos.add(v);
     }
