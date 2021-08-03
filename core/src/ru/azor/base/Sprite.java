@@ -43,12 +43,6 @@ public class Sprite extends Rect {
         return false;
     }
 
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-
-
     public boolean touchUp(Vector2 touch, int pointer, int button) {
         return false;
     }
