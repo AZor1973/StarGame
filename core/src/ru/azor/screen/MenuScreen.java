@@ -10,11 +10,10 @@ import ru.azor.base.BaseScreen;
 public class MenuScreen extends BaseScreen {
 
     private Texture img;
-    private Vector2 pos;//позиция объекта
-    private Vector2 v;//скорость
-    private float speed;//скалярная величина скорости
-    private int x;//координаты цели
-    private int y;
+    private Vector2 pos;
+    private Vector2 v;
+    private Vector2 target;
+    private static final float SPEED = 8f;
 
     @Override
     public void show() {
@@ -22,9 +21,7 @@ public class MenuScreen extends BaseScreen {
         img = new Texture("badlogic.jpg");
         pos = new Vector2();
         v = new Vector2();
-        speed = 1f;//Задаём величину скорости
-        x = 0;
-        y = 0;
+        target = new Vector2();
     }
 
     @Override
@@ -33,15 +30,11 @@ public class MenuScreen extends BaseScreen {
         batch.begin();
         batch.draw(img, pos.x, pos.y);
         batch.end();
-        pos.add(v);
-        //Увеличиваем цель чтобы не промахнутся
-        if (Math.abs(pos.x - x) < 2 && Math.abs(pos.y - y) < 2) {
-            v.set(0, 0);
+        if (target.dst(pos) > SPEED) {
+            pos.add(v);
+        } else {
+            pos.set(target);
         }
-//        В этом случае часто пролетаем мимо
-//        if ((int)pos.x == x && (int)pos.y == y){
-//            v.set(0 ,0);
-//        }
     }
 
     @Override
@@ -52,11 +45,8 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        //задаём направление и величину скорости;
-        v.set(screenX, Gdx.graphics.getHeight() - screenY).sub(pos).nor().scl(speed);
-        //Вытаскиваем координаты цели для остановки
-        x = screenX;
-        y = Gdx.graphics.getHeight() - screenY;
-        return super.touchDown(screenX, screenY, pointer, button);
+        target.set(screenX, Gdx.graphics.getHeight() - screenY);
+        v.set(target.cpy().sub(pos)).setLength(SPEED);
+        return false;
     }
 }
