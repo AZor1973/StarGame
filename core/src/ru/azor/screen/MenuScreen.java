@@ -14,21 +14,6 @@ public class MenuScreen extends BaseScreen {
     private Texture bg;
     private Background background;
     private Logo logo;
-    private static Vector2 v;
-    private static Vector2 target;
-    private static final float SPEED = 0.008f;
-
-    public static Vector2 getV() {
-        return v;
-    }
-
-    public static Vector2 getTarget() {
-        return target;
-    }
-
-    public static float getSPEED() {
-        return SPEED;
-    }
 
     @Override
     public void show() {
@@ -37,8 +22,6 @@ public class MenuScreen extends BaseScreen {
         bg = new Texture("textures/bg.png");
         background = new Background(bg);
         logo = new Logo(img);
-        v = new Vector2();
-        target = new Vector2();
     }
 
     @Override
@@ -65,8 +48,7 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        target = touch;
-        v.set(touch.cpy().sub(logo.pos)).setLength(SPEED);
+        logo.touchDown(touch,0,0);
         return false;
     }
 }

@@ -3,15 +3,20 @@ package ru.azor.sprite;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import ru.azor.base.Sprite;
 import ru.azor.math.Rect;
-import ru.azor.screen.MenuScreen;
 
 public class Logo extends Sprite {
+    private static Vector2 v;
+    private static Vector2 target;
+    private static final float SPEED = 0.008f;
 
     public Logo(Texture texture) {
         super(new TextureRegion(texture));
+        v = new Vector2();
+        target = new Vector2();
     }
 
     @Override
@@ -30,10 +35,17 @@ public class Logo extends Sprite {
                 scale, scale,
                 angle
         );
-        if (MenuScreen.getTarget().dst(pos) > MenuScreen.getSPEED()) {
-            pos.add(MenuScreen.getV());
+        if (target.dst(pos) > SPEED) {
+            pos.add(v);
         } else {
-            pos.set(MenuScreen.getTarget());
+            pos.set(target);
         }
+    }
+
+    @Override
+    public boolean touchDown(Vector2 touch, int pointer, int button) {
+        target = touch;
+        v.set(touch.cpy().sub(pos)).setLength(SPEED);
+        return false;
     }
 }
