@@ -17,16 +17,12 @@ public class MenuScreen extends BaseScreen {
     private static final int STAR_COUNT = 256;
 
     private final Game game;
-
     private Texture bg;
     private Background background;
-
     private TextureAtlas atlas;
-
     private Star[] stars;
     private ExitButton exitButton;
     private PlayButton playButton;
-
     public MenuScreen(Game game) {
         this.game = game;
     }
