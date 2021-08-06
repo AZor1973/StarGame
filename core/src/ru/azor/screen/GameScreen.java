@@ -12,12 +12,9 @@ import ru.azor.sprite.Star;
 public class GameScreen extends BaseScreen {
 
     private static final int STAR_COUNT = 64;
-
     private Texture bg;
     private Background background;
-
     private TextureAtlas atlas;
-
     private Star[] stars;
 
     @Override
