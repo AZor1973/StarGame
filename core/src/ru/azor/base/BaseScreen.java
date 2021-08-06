@@ -16,11 +16,14 @@ import ru.azor.math.Rect;
 public class BaseScreen implements Screen, InputProcessor {
 
     protected SpriteBatch batch;
+
     private Rect screenBounds;
     private Rect worldBounds;
     private Rect glBounds;
+
     private Matrix4 worldToGl;
     private Matrix3 screenToWorld;
+
     private Vector2 touch;
 
     @Override
@@ -47,6 +50,7 @@ public class BaseScreen implements Screen, InputProcessor {
         screenBounds.setSize(width, height);
         screenBounds.setLeft(0);
         screenBounds.setBottom(0);
+
         float aspect = width / (float) height;
         worldBounds.setHeight(1f);
         worldBounds.setWidth(1f * aspect);

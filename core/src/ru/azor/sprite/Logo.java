@@ -1,7 +1,6 @@
 package ru.azor.sprite;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -9,43 +8,36 @@ import ru.azor.base.Sprite;
 import ru.azor.math.Rect;
 
 public class Logo extends Sprite {
-    private static Vector2 v;
-    private static Vector2 target;
-    private static final float SPEED = 0.008f;
+
+    private static final float V_LEN = 0.001f;
+
+    private Vector2 touch;
+    private Vector2 v;
 
     public Logo(Texture texture) {
         super(new TextureRegion(texture));
-        v = new Vector2();
-        target = new Vector2();
+        this.touch = new Vector2();
+        this.v = new Vector2();
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        setHeightProportion(worldBounds.getHeight());
-        pos.set(worldBounds.pos);
+        setHeightProportion(0.3f);
     }
 
     @Override
-    public void draw(SpriteBatch batch) {
-        batch.draw(
-                regions[frame],
-                pos.x, pos.y,
-                halfWidth, halfHeight,
-                0.3f, 0.3f,
-                scale, scale,
-                angle
-        );
-        if (target.dst(pos) > SPEED) {
+    public void update(float delta) {
+        if (touch.dst(pos) > V_LEN) {
             pos.add(v);
         } else {
-            pos.set(target);
+            pos.set(touch);
         }
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        target = touch;
-        v.set(touch.cpy().sub(pos)).setLength(SPEED);
+        this.touch.set(touch);
+        v.set(touch.cpy().sub(pos)).setLength(V_LEN);
         return false;
     }
 }
