@@ -1,9 +1,12 @@
 package ru.azor.sprite;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
 
 import ru.azor.base.Sprite;
 import ru.azor.math.Rect;
@@ -32,6 +35,10 @@ public class MainShip extends Sprite {
     private float bulletHeight;
     private int bulletDamage;
 
+    private final Timer.Task task;
+    private static final float RATE_OF_FIRE = 0.1f;
+    private final Sound sound;
+
     public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
         this.bulletPool = bulletPool;
@@ -40,6 +47,13 @@ public class MainShip extends Sprite {
         bulletV = new Vector2(0, 0.5f);
         bulletHeight = 0.01f;
         bulletDamage = 1;
+        task = new Timer.Task() {
+            @Override
+            public void run() {
+                shoot();
+            }
+        };
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
     }
 
     @Override
@@ -121,6 +135,9 @@ public class MainShip extends Sprite {
                 pressedRight = true;
                 moveRight();
                 break;
+            case Input.Keys.DOWN:
+                Timer.schedule(task, 0, RATE_OF_FIRE);
+                break;
         }
         return false;
     }
@@ -148,6 +165,9 @@ public class MainShip extends Sprite {
             case Input.Keys.UP:
                 shoot();
                 break;
+            case Input.Keys.DOWN:
+                task.cancel();
+                break;
         }
         return false;
     }
@@ -165,8 +185,13 @@ public class MainShip extends Sprite {
     }
 
     private void shoot() {
+        sound.play(1.0f);
         Bullet bullet = bulletPool.obtain();
         bulletPos.set(pos.x, pos.y + getHalfHeight());
         bullet.set(this, bulletRegion, bulletPos, bulletV, bulletHeight, worldBounds, bulletDamage);
+    }
+
+    public void dispose() {
+        sound.dispose();
     }
 }
