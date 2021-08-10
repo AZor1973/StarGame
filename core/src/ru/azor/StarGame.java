@@ -12,3 +12,4 @@ public class StarGame extends Game {
 	}
 
 }
+

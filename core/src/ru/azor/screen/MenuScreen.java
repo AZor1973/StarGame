@@ -17,12 +17,16 @@ public class MenuScreen extends BaseScreen {
     private static final int STAR_COUNT = 256;
 
     private final Game game;
+
     private Texture bg;
     private Background background;
+
     private TextureAtlas atlas;
+
     private Star[] stars;
     private ExitButton exitButton;
     private PlayButton playButton;
+
     public MenuScreen(Game game) {
         this.game = game;
     }
@@ -32,6 +36,7 @@ public class MenuScreen extends BaseScreen {
         super.show();
         bg = new Texture("textures/bg.png");
         background = new Background(bg);
+
         atlas = new TextureAtlas("textures/menuAtlas.tpack");
         stars = new Star[STAR_COUNT];
         for (int i = 0; i < stars.length; i++) {
