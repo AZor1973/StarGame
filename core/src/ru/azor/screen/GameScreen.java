@@ -7,11 +7,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.List;
+
 import ru.azor.base.BaseScreen;
 import ru.azor.math.Rect;
 import ru.azor.pool.BulletPool;
 import ru.azor.pool.EnemyPool;
 import ru.azor.sprite.Background;
+import ru.azor.sprite.Bullet;
+import ru.azor.sprite.EnemyShip;
 import ru.azor.sprite.MainShip;
 import ru.azor.sprite.Star;
 import ru.azor.utils.EnemyEmitter;
@@ -126,7 +130,53 @@ public class GameScreen extends BaseScreen {
     }
 
     private void checkCollisions() {
-
+        List<EnemyShip> enemyShipList = enemyPool.getActiveSprites();
+        for (EnemyShip enemyShip : enemyShipList) {
+            if (enemyShip.isDestroyed()) {
+                continue;
+            }
+            float minDist = enemyShip.getHalfWidth() + mainShip.getHalfWidth();
+            if (mainShip.pos.dst(enemyShip.pos) < minDist) {
+                enemyShip.destroy();
+            }
+        }
+        List<Bullet> bulletList = bulletPool.getActiveSprites();
+        for (Bullet bullet : bulletList) {
+            if (bullet.isDestroyed()) {
+                continue;
+            }
+            for (EnemyShip enemyShip : enemyShipList) {
+                if (enemyShip.isDestroyed() || bullet.getOwner() != mainShip) {
+                    continue;
+                }
+                if (!bullet.isOutside(enemyShip)){
+                    enemyShip.destroy();
+                    bullet.destroy();
+                }
+            }
+        }
+//        for (int i = 0; i < enemyPool.getActiveSprites().size(); i++) {
+//            float distance = mainShip.getHalfWidth() + enemyPool.getActiveSprites().get(i).getHalfWidth();
+//            if (enemyPool.getActiveSprites().get(i).isDestroyed()){
+//                continue;
+//            }
+//            if (mainShip.pos.dst(enemyPool.getActiveSprites().get(i).pos )< distance){
+//                enemyPool.getActiveSprites().get(i).destroy();
+//            }
+//        }
+//        for (int i = 0; i < bulletPool.getActiveSprites().size(); i++) {
+//            if (bulletPool.getActiveSprites().get(i).isDestroyed()){
+//               continue;
+//            }
+//            for (int j = 0; j < enemyPool.getActiveSprites().size(); j++) {
+//                if (enemyPool.getActiveSprites().get(j).isDestroyed() || bulletPool.getActiveSprites().get(i).getOwner() != mainShip){
+//                    continue;
+//                }
+//                if (!bulletPool.getActiveSprites().get(i).isOutside(enemyPool.getActiveSprites().get(j))){
+//                    enemyPool.getActiveSprites().get(j).destroy();
+//                }
+//            }
+//        }
     }
 
     private void freeAllDestroyed() {
