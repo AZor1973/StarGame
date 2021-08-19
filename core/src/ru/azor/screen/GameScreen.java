@@ -126,7 +126,28 @@ public class GameScreen extends BaseScreen {
     }
 
     private void checkCollisions() {
-
+        for (int i = 0; i < enemyPool.getActiveSprites().size(); i++) {
+            float distance = mainShip.getHalfWidth() + enemyPool.getActiveSprites().get(i).getHalfWidth();
+            if (enemyPool.getActiveSprites().get(i).isDestroyed()){
+                continue;
+            }
+            if (mainShip.pos.dst(enemyPool.getActiveSprites().get(i).pos )< distance){
+                enemyPool.getActiveSprites().get(i).destroy();
+            }
+        }
+        for (int i = 0; i < bulletPool.getActiveSprites().size(); i++) {
+            if (bulletPool.getActiveSprites().get(i).isDestroyed()){
+               continue;
+            }
+            for (int j = 0; j < enemyPool.getActiveSprites().size(); j++) {
+                if (enemyPool.getActiveSprites().get(j).isDestroyed() || bulletPool.getActiveSprites().get(i).getOwner() != mainShip){
+                    continue;
+                }
+                if (!bulletPool.getActiveSprites().get(i).isOutside(enemyPool.getActiveSprites().get(j))){
+                    enemyPool.getActiveSprites().get(j).destroy();
+                }
+            }
+        }
     }
 
     private void freeAllDestroyed() {
