@@ -22,6 +22,19 @@ task debug(dependsOn: classes, type: JavaExec) {
     debug = true
 }
 
+task deleteJar(type: Delete) {
+    delete 'libs/jars/stargame.jar'
+}
+
+task createJar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('libs/jars/')
+    include('classes.jar')
+    rename('classes.jar', 'stargame.jar')
+}
+
+createJar.dependsOn(deleteJar, build)
+
 task dist(type: Jar) {
     manifest {
         attributes 'Main-Class': project.mainClassName
