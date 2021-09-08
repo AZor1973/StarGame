@@ -72,7 +72,7 @@ public class GameScreen extends BaseScreen {
         super.show();
         bg = new Texture("textures/bg.png");
         background = new Background(bg);
-        atlasLesson8 = new TextureAtlas("textures/lesson8.pack");
+        atlasLesson8 = new TextureAtlas("textures/addAtlas.pack");
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
         stars = new Star[STAR_COUNT];
         for (int i = 0; i < stars.length; i++) {
