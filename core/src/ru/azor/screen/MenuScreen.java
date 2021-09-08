@@ -1,6 +1,8 @@
 package ru.azor.screen;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -22,7 +24,7 @@ public class MenuScreen extends BaseScreen {
     private Background background;
 
     private TextureAtlas atlas;
-
+    private Music music;
     private Star[] stars;
     private ExitButton exitButton;
     private PlayButton playButton;
@@ -36,7 +38,6 @@ public class MenuScreen extends BaseScreen {
         super.show();
         bg = new Texture("textures/bg.png");
         background = new Background(bg);
-
         atlas = new TextureAtlas("textures/menuAtlas.tpack");
         stars = new Star[STAR_COUNT];
         for (int i = 0; i < stars.length; i++) {
@@ -44,6 +45,9 @@ public class MenuScreen extends BaseScreen {
         }
         exitButton = new ExitButton(atlas);
         playButton = new PlayButton(atlas, game);
+        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/startMusic.mp3"));
+        music.setLooping(true);
+        music.play();
     }
 
     @Override
@@ -68,6 +72,7 @@ public class MenuScreen extends BaseScreen {
         super.dispose();
         bg.dispose();
         atlas.dispose();
+        music.dispose();
     }
 
     @Override

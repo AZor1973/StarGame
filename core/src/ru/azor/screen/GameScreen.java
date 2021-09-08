@@ -16,14 +16,18 @@ import ru.azor.math.Rect;
 import ru.azor.pool.BulletPool;
 import ru.azor.pool.EnemyPool;
 import ru.azor.pool.ExplosionPool;
+import ru.azor.pool.MedKitPool;
 import ru.azor.sprite.Background;
 import ru.azor.sprite.Bullet;
 import ru.azor.sprite.EnemyShip;
 import ru.azor.sprite.GameOver;
 import ru.azor.sprite.MainShip;
+import ru.azor.sprite.MedKit;
 import ru.azor.sprite.NewGameButton;
+import ru.azor.sprite.ProgressBar;
 import ru.azor.sprite.Star;
 import ru.azor.utils.EnemyEmitter;
+import ru.azor.utils.MedKitEmitter;
 
 public class GameScreen extends BaseScreen {
 
@@ -38,11 +42,12 @@ public class GameScreen extends BaseScreen {
     private Background background;
 
     private TextureAtlas atlas;
-
+    private TextureAtlas atlasLesson8;
     private Star[] stars;
     private BulletPool bulletPool;
     private ExplosionPool explosionPool;
     private EnemyPool enemyPool;
+    private MedKitPool medKitPool;
     private MainShip mainShip;
 
     private Sound bulletSound;
@@ -51,10 +56,11 @@ public class GameScreen extends BaseScreen {
     private Music music;
 
     private EnemyEmitter enemyEmitter;
+    private MedKitEmitter medKitEmitter;
 
     private GameOver gameOver;
     private NewGameButton newGameButton;
-
+    private ProgressBar progressBar;
     private Font font;
     private int frags;
     private StringBuilder sbFrags;
@@ -66,7 +72,7 @@ public class GameScreen extends BaseScreen {
         super.show();
         bg = new Texture("textures/bg.png");
         background = new Background(bg);
-
+        atlasLesson8 = new TextureAtlas("textures/addAtlas.pack");
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
         stars = new Star[STAR_COUNT];
         for (int i = 0; i < stars.length; i++) {
@@ -76,11 +82,13 @@ public class GameScreen extends BaseScreen {
         explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
         explosionPool = new ExplosionPool(atlas, explosionSound);
         enemyPool = new EnemyPool(worldBounds, bulletPool, explosionPool);
+        medKitPool = new MedKitPool(worldBounds);
         laserSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
         mainShip = new MainShip(atlas, bulletPool, explosionPool, laserSound);
 
         bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
         enemyEmitter = new EnemyEmitter(worldBounds, bulletSound, enemyPool, atlas);
+        medKitEmitter = new MedKitEmitter(worldBounds, medKitPool, atlasLesson8);
 
         gameOver = new GameOver(atlas);
         newGameButton = new NewGameButton(atlas, this);
@@ -88,6 +96,7 @@ public class GameScreen extends BaseScreen {
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
         music.setLooping(true);
         music.play();
+        progressBar = new ProgressBar(atlasLesson8);
         font = new Font("font/font.fnt", "font/font.png");
         font.setSize(0.02f);
         frags = 0;
@@ -100,6 +109,7 @@ public class GameScreen extends BaseScreen {
         mainShip.startNewGame();
         bulletPool.freeAllActiveSprites();
         enemyPool.freeAllActiveSprites();
+        medKitPool.freeAllActiveSprites();
         explosionPool.freeAllActiveSprites();
         frags = 0;
     }
@@ -123,6 +133,7 @@ public class GameScreen extends BaseScreen {
         mainShip.resize(worldBounds);
         gameOver.resize(worldBounds);
         newGameButton.resize(worldBounds);
+        progressBar.resize(worldBounds);
     }
 
     @Override
@@ -130,9 +141,11 @@ public class GameScreen extends BaseScreen {
         super.dispose();
         bg.dispose();
         atlas.dispose();
+        atlasLesson8.dispose();
         bulletPool.dispose();
         explosionPool.dispose();
         enemyPool.dispose();
+        medKitPool.dispose();
         explosionSound.dispose();
         laserSound.dispose();
         bulletSound.dispose();
@@ -180,7 +193,10 @@ public class GameScreen extends BaseScreen {
             mainShip.update(delta);
             bulletPool.updateActiveSprites(delta);
             enemyPool.updateActiveSprites(delta);
+            medKitPool.updateActiveSprites(delta);
             enemyEmitter.generate(delta, frags);
+            medKitEmitter.generate(delta, frags);
+            progressBar.update(delta, mainShip.getHp());
         }
     }
 
@@ -197,6 +213,18 @@ public class GameScreen extends BaseScreen {
             if (mainShip.pos.dst(enemyShip.pos) < minDist) {
                 mainShip.damage(enemyShip.getBulletDamage() * 2);
                 enemyShip.destroy();
+            }
+        }
+
+        List<MedKit> medKitsList = medKitPool.getActiveSprites();
+        for (MedKit medKit : medKitsList) {
+            if (medKit.isDestroyed()) {
+                continue;
+            }
+            float minDist = medKit.getHalfWidth() + mainShip.getHalfWidth();
+            if (mainShip.pos.dst(medKit.pos) < minDist) {
+                mainShip.healing(medKit.getHp());
+                medKit.destroy();
             }
         }
 
@@ -228,6 +256,7 @@ public class GameScreen extends BaseScreen {
         bulletPool.freeAllDestroyedActiveSprites();
         explosionPool.freeAllDestroyedActiveSprites();
         enemyPool.freeAllDestroyedActiveSprites();
+        medKitPool.freeAllDestroyedActiveSprites();
     }
 
     private void draw() {
@@ -240,11 +269,13 @@ public class GameScreen extends BaseScreen {
             mainShip.draw(batch);
             bulletPool.drawActiveSprites(batch);
             enemyPool.drawActiveSprites(batch);
+            medKitPool.drawActiveSprites(batch);
         } else {
             gameOver.draw(batch);
             newGameButton.draw(batch);
         }
         explosionPool.drawActiveSprites(batch);
+        progressBar.draw(batch);
         printInfo();
         batch.end();
     }

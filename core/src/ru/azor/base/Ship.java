@@ -73,6 +73,15 @@ public abstract class Ship extends Sprite {
         damageAnimateTimer = 0f;
     }
 
+    public void healing(int healing){
+        hp += healing;
+        if (hp >= 100){
+            hp = 100;
+        }
+        frame = 1;
+        damageAnimateTimer = 0f;
+    }
+
     public abstract boolean isBulletCollision(Bullet bullet);
 
     public int getBulletDamage() {
